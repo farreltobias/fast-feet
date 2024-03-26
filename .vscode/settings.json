@@ -1,6 +1,7 @@
 {
   "conventionalCommits.scopes": [
-    "README"
+    "README",
+    "domain"
   ],
   "cSpell.words": [
     "deliverymans",
