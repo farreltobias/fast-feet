@@ -5,9 +5,9 @@ import {
   ConfirmationPhoto,
   ConfirmationPhotoProps,
 } from '@/domain/warehouse/enterprise/entities/confirmation-photo'
-// import { Injectable } from '@nestjs/common'
-// import { PrismaService } from '@/infra/database/prisma/prisma.service'
-// import { PrismaConfirmationPhotoMapper } from '@/infra/database/prisma/mappers/prisma-confirmation-photo-mapper'
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { PrismaConfirmationPhotoMapper } from '@/infra/database/prisma/mappers/prisma-confirmation-photo-mapper'
 
 export function makeConfirmationPhoto(
   override: Partial<ConfirmationPhotoProps> = {},
@@ -25,19 +25,19 @@ export function makeConfirmationPhoto(
   return confirmationPhoto
 }
 
-// @Injectable()
-// export class ConfirmationPhotoFactory {
-//   constructor(private prisma: PrismaService) {}
+@Injectable()
+export class ConfirmationPhotoFactory {
+  constructor(private prisma: PrismaService) {}
 
-//   async makePrismaConfirmationPhoto(
-//     data: Partial<ConfirmationPhotoProps> = {},
-//   ): Promise<ConfirmationPhoto> {
-//     const confirmationPhoto = makeConfirmationPhoto(data)
+  async makePrismaConfirmationPhoto(
+    data: Partial<ConfirmationPhotoProps> = {},
+  ): Promise<ConfirmationPhoto> {
+    const confirmationPhoto = makeConfirmationPhoto(data)
 
-//     await this.prisma.user.create({
-//       data: PrismaConfirmationPhotoMapper.toPrisma(confirmationPhoto),
-//     })
+    await this.prisma.confirmationPhoto.create({
+      data: PrismaConfirmationPhotoMapper.toPrisma(confirmationPhoto),
+    })
 
-//     return confirmationPhoto
-//   }
-// }
+    return confirmationPhoto
+  }
+}

@@ -9,6 +9,7 @@ import {
 } from '../../enterprise/entities/value-objects/delivery-status'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { AdminsRepository } from '../repositories/admins-repository'
+import { Injectable } from '@nestjs/common'
 
 interface ReturnDeliveryDTO {
   deliveryId: string
@@ -20,6 +21,7 @@ type ReturnDeliveryResponse = Either<
   { delivery: Delivery }
 >
 
+@Injectable()
 export class ReturnDeliveryUseCase {
   constructor(
     private deliveriesRepository: DeliveriesRepository,

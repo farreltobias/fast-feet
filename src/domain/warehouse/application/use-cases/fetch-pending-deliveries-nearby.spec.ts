@@ -38,21 +38,21 @@ describe('Fetch Delivery Nearby', () => {
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 
@@ -80,7 +80,7 @@ describe('Fetch Delivery Nearby', () => {
       inMemoryDeliveriesRepository.items.push(
         makeDelivery({
           status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-          recipientId: recipient.id,
+          postedTo: recipient.id,
         }),
       )
     }
@@ -108,21 +108,21 @@ describe('Fetch Delivery Nearby', () => {
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 
     inMemoryDeliveriesRepository.items.push(
       makeDelivery({
         status: DeliveryStatus.create(DeliveryStatusEnum.WITHDRAWN),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
       }),
     )
 

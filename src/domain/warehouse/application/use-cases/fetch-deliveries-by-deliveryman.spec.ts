@@ -48,7 +48,7 @@ describe('Fetch Delivery Nearby', () => {
         makeDelivery({
           status: DeliveryStatus.create(DeliveryStatusEnum.WITHDRAWN),
           withdrawnBy: deliveryman.id,
-          recipientId: recipient.id,
+          postedTo: recipient.id,
         }),
       )
     }
@@ -81,7 +81,7 @@ describe('Fetch Delivery Nearby', () => {
         makeDelivery({
           status: DeliveryStatus.create(DeliveryStatusEnum.WITHDRAWN),
           withdrawnBy: deliveryman.id,
-          recipientId: recipient.id,
+          postedTo: recipient.id,
         }),
       )
     }
@@ -114,7 +114,7 @@ describe('Fetch Delivery Nearby', () => {
         makeDelivery({
           status: DeliveryStatus.create(DeliveryStatusEnum.WITHDRAWN),
           withdrawnBy: deliveryman.id,
-          recipientId: recipient.id,
+          postedTo: recipient.id,
         }),
       )
     }

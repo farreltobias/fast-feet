@@ -7,10 +7,11 @@ import { DeliveryStatusEnum } from '../../enterprise/entities/value-objects/deli
 import { AdminsRepository } from '../repositories/admins-repository'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { RecipientsRepository } from '../repositories/recipients-repository'
+import { Injectable } from '@nestjs/common'
 
 interface MakeDeliveryPendingDTO {
   deliveryId: string
-  recipientId: string
+  postedTo: string
   adminId: string
 }
 
@@ -19,6 +20,7 @@ type MakeDeliveryPendingResponse = Either<
   { delivery: Delivery }
 >
 
+@Injectable()
 export class MakeDeliveryPendingUseCase {
   constructor(
     private deliveriesRepository: DeliveriesRepository,
@@ -28,7 +30,7 @@ export class MakeDeliveryPendingUseCase {
 
   async execute({
     deliveryId,
-    recipientId,
+    postedTo,
     adminId,
   }: MakeDeliveryPendingDTO): Promise<MakeDeliveryPendingResponse> {
     const delivery = await this.deliveriesRepository.findById(deliveryId)
@@ -47,13 +49,13 @@ export class MakeDeliveryPendingUseCase {
       return left(new NotAllowedError())
     }
 
-    const recipient = await this.recipientsRepository.findById(recipientId)
+    const recipient = await this.recipientsRepository.findById(postedTo)
 
     if (!recipient) {
       return left(new ResourceNotFoundError())
     }
 
-    delivery.recipientId = recipient.id
+    delivery.postedTo = recipient.id
     await this.deliveriesRepository.save(delivery)
 
     return right({ delivery })

@@ -7,6 +7,7 @@ import { DeliveryStatusEnum } from '../../enterprise/entities/value-objects/deli
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { DeliveryConfirmationPhoto } from '../../enterprise/entities/delivery-confirmation-photo'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common'
 
 interface DeliverDeliveryDTO {
   deliveryId: string
@@ -19,6 +20,7 @@ type DeliverDeliveryResponse = Either<
   { delivery: Delivery }
 >
 
+@Injectable()
 export class DeliverDeliveryUseCase {
   constructor(private deliveriesRepository: DeliveriesRepository) {}
 

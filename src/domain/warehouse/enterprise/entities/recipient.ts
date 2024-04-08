@@ -5,7 +5,7 @@ export interface RecipientProps {
   name: string
   street: string
   number: string
-  complement?: string
+  complement?: string | null
   neighborhood: string
   city: string
   state: string
@@ -25,7 +25,7 @@ export class Recipient extends Entity<RecipientProps> {
     return this.props.number
   }
 
-  get complement(): string | undefined {
+  get complement(): string | undefined | null {
     return this.props.complement
   }
 

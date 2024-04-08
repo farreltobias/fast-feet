@@ -5,9 +5,10 @@ import {
 } from '@/domain/warehouse/application/repositories/deliveries-repository'
 import { Delivery } from '@/domain/warehouse/enterprise/entities/delivery'
 import { InMemoryDeliveryConfirmationPhotosRepository } from './in-memory-delivery-confirmation-photos-repository'
-import { DeliveryWithLocation } from '@/domain/warehouse/enterprise/entities/value-objects/delivery-with-location'
+import { DeliveryDetails } from '@/domain/warehouse/enterprise/entities/value-objects/delivery-details'
 import { InMemoryRecipientsRepository } from './in-memory-recipients-repository'
 import { DomainEvents } from '@/core/events/domain-events'
+import { DeliveryWithRecipient } from '@/domain/warehouse/enterprise/entities/value-objects/delivery-with-recipient'
 
 export class InMemoryDeliveriesRepository implements DeliveriesRepository {
   public items: Delivery[] = []
@@ -19,7 +20,7 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
 
   async findManyByDeliveryman(
     params: DeliverymanParams,
-  ): Promise<DeliveryWithLocation[]> {
+  ): Promise<DeliveryDetails[]> {
     const deliveriesByDeliveryman = this.items.filter((delivery) => {
       return (
         delivery.withdrawnBy?.toString() === params.deliverymanId &&
@@ -27,23 +28,23 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
       )
     })
 
-    const deliveriesWithLocation = deliveriesByDeliveryman
-      .reduce((acc: DeliveryWithLocation[], delivery) => {
-        const { recipientId } = delivery
+    const deliveriesDetails = deliveriesByDeliveryman
+      .reduce((acc: DeliveryDetails[], delivery) => {
+        const { postedTo } = delivery
 
-        if (!recipientId) {
+        if (!postedTo) {
           return acc
         }
 
         const recipient = this.recipientsRepository.items.find((recipient) =>
-          recipient.id.equals(recipientId),
+          recipient.id.equals(postedTo),
         )
 
         if (!recipient) {
           return acc
         }
 
-        const deliveryWithLocation = DeliveryWithLocation.create({
+        const deliveryDetails = DeliveryDetails.create({
           name: delivery.name,
           slug: delivery.slug,
           status: delivery.status,
@@ -53,11 +54,11 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
           updatedAt: delivery.updatedAt,
         })
 
-        return [deliveryWithLocation, ...acc]
+        return [deliveryDetails, ...acc]
       }, [])
       .slice((params.page - 1) * 20, params.page * 20)
 
-    return deliveriesWithLocation
+    return deliveriesDetails
   }
 
   async findManyByLocation({
@@ -66,7 +67,7 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
     neighborhood,
     status,
     page,
-  }: LocationParams): Promise<DeliveryWithLocation[]> {
+  }: LocationParams): Promise<DeliveryDetails[]> {
     const recipients = this.recipientsRepository.items.filter((recipient) => {
       return (
         recipient.city === city &&
@@ -75,26 +76,26 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
       )
     })
 
-    const deliveriesWithLocation = this.items
+    const deliveriesDetails = this.items
       .filter((delivery) => {
         return !status || delivery.status.value === status
       })
-      .reduce((acc: DeliveryWithLocation[], delivery) => {
-        const { recipientId } = delivery
+      .reduce((acc: DeliveryDetails[], delivery) => {
+        const { postedTo } = delivery
 
-        if (!recipientId) {
+        if (!postedTo) {
           return acc
         }
 
         const recipient = recipients.find((recipient) =>
-          recipient.id.equals(recipientId),
+          recipient.id.equals(postedTo),
         )
 
         if (!recipient) {
           return acc
         }
 
-        const deliveryWithLocation = DeliveryWithLocation.create({
+        const deliveryDetails = DeliveryDetails.create({
           name: delivery.name,
           slug: delivery.slug,
           status: delivery.status,
@@ -104,13 +105,10 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
           updatedAt: delivery.updatedAt,
         })
 
-        return [deliveryWithLocation, ...acc]
+        return [deliveryDetails, ...acc]
       }, [])
 
-    const pagedDeliveries = deliveriesWithLocation.slice(
-      (page - 1) * 20,
-      page * 20,
-    )
+    const pagedDeliveries = deliveriesDetails.slice((page - 1) * 20, page * 20)
 
     return pagedDeliveries
   }
@@ -123,6 +121,33 @@ export class InMemoryDeliveriesRepository implements DeliveriesRepository {
     }
 
     return delivery
+  }
+
+  async findBySlug(slug: string): Promise<DeliveryWithRecipient | null> {
+    const delivery = this.items.find((item) => item.slug.value === slug)
+
+    const recipient = await this.recipientsRepository.findById(
+      delivery?.postedTo?.toString() || '',
+    )
+
+    if (!delivery || !recipient) {
+      return null
+    }
+
+    return DeliveryWithRecipient.create({
+      recipientName: recipient.name,
+      street: recipient.street,
+      number: recipient.number,
+      complement: recipient.complement,
+      city: recipient.city,
+      neighborhood: recipient.neighborhood,
+      zipCode: recipient.zipCode,
+      state: recipient.state,
+      status: delivery.status,
+      postedAt: delivery.postedAt,
+      withdrawnAt: delivery.withdrawnAt,
+      deliveredAt: delivery.deliveredAt,
+    })
   }
 
   async save(delivery: Delivery): Promise<void> {

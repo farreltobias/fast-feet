@@ -1,24 +1,28 @@
 import { InMemoryDeliverymansRepository } from 'test/repositories/in-memory-deliverymans-repository'
-import { AuthenticateDeliverymanUseCase } from './authenticate-deliveryman'
+import { AuthenticateUserUseCase } from './authenticate-user'
 import { FakeHasher } from 'test/cryptography/fake-hasher'
 import { FakeEncrypter } from 'test/cryptography/fake-encrypter'
 import { makeDeliveryman } from 'test/factories/make-deliveryman'
 import { CPF } from '../../enterprise/entities/value-objects/cpf'
+import { InMemoryAdminsRepository } from 'test/repositories/in-memory-admins-repository'
 
 let inMemoryDeliverymansRepository: InMemoryDeliverymansRepository
+let inMemoryAdminsRepository: InMemoryAdminsRepository
 let fakeHasher: FakeHasher
 let fakeEncrypter: FakeEncrypter
 
-let sut: AuthenticateDeliverymanUseCase
+let sut: AuthenticateUserUseCase
 
 describe('Authenticate Deliveryman', () => {
   beforeEach(() => {
     inMemoryDeliverymansRepository = new InMemoryDeliverymansRepository()
+    inMemoryAdminsRepository = new InMemoryAdminsRepository()
     fakeHasher = new FakeHasher()
     fakeEncrypter = new FakeEncrypter()
 
-    sut = new AuthenticateDeliverymanUseCase(
+    sut = new AuthenticateUserUseCase(
       inMemoryDeliverymansRepository,
+      inMemoryAdminsRepository,
       fakeHasher,
       fakeEncrypter,
     )

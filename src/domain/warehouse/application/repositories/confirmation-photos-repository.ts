@@ -1,5 +1,5 @@
 import { ConfirmationPhoto } from '../../enterprise/entities/confirmation-photo'
 
-export interface ConfirmationPhotosRepository {
-  create(ConfirmationPhoto: ConfirmationPhoto): Promise<void>
+export abstract class ConfirmationPhotosRepository {
+  abstract create(confirmationPhoto: ConfirmationPhoto): Promise<void>
 }

@@ -54,7 +54,7 @@ describe('Make Delivery Pending', () => {
     const result = await sut.execute({
       adminId: admin.id.toString(),
       deliveryId: delivery.id.toString(),
-      recipientId: recipient.id.toString(),
+      postedTo: recipient.id.toString(),
     })
 
     expect(result.isRight()).toBe(true)
@@ -64,7 +64,8 @@ describe('Make Delivery Pending', () => {
     expect(result.value).toEqual({
       delivery: expect.objectContaining({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-        recipientId: recipient.id,
+        postedTo: recipient.id,
+        postedAt: expect.any(Date),
       }),
     })
   })
@@ -82,7 +83,7 @@ describe('Make Delivery Pending', () => {
       status: DeliveryStatus.create(DeliveryStatusEnum.WITHDRAWN),
       withdrawnAt: new Date(),
       withdrawnBy: makeDeliveryman().id,
-      recipientId: recipient.id,
+      postedTo: recipient.id,
     })
 
     inMemoryDeliveriesRepository.items.push(delivery)
@@ -90,7 +91,7 @@ describe('Make Delivery Pending', () => {
     const result = await sut.execute({
       adminId: admin.id.toString(),
       deliveryId: delivery.id.toString(),
-      recipientId: recipient.id.toString(),
+      postedTo: recipient.id.toString(),
     })
 
     expect(result.isRight()).toBe(true)
@@ -100,6 +101,7 @@ describe('Make Delivery Pending', () => {
     expect(result.value).toEqual({
       delivery: expect.objectContaining({
         status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
+        postedAt: expect.any(Date),
         withdrawnAt: null,
         withdrawnBy: null,
       }),
@@ -124,7 +126,7 @@ describe('Make Delivery Pending', () => {
     const result = await sut.execute({
       adminId: admin.id.toString(),
       deliveryId: delivery.id.toString(),
-      recipientId: recipient.id.toString(),
+      postedTo: recipient.id.toString(),
     })
 
     expect(result.isLeft()).toBe(true)
@@ -142,7 +144,7 @@ describe('Make Delivery Pending', () => {
 
     const result = await sut.execute({
       adminId: admin.id.toString(),
-      recipientId: recipient.id.toString(),
+      postedTo: recipient.id.toString(),
       deliveryId: '1',
     })
 
@@ -162,7 +164,7 @@ describe('Make Delivery Pending', () => {
     const result = await sut.execute({
       adminId: '1',
       deliveryId: delivery.id.toString(),
-      recipientId: recipient.id.toString(),
+      postedTo: recipient.id.toString(),
     })
 
     expect(result.isLeft()).toBe(true)
@@ -181,7 +183,7 @@ describe('Make Delivery Pending', () => {
     const result = await sut.execute({
       adminId: admin.id.toString(),
       deliveryId: delivery.id.toString(),
-      recipientId: '1',
+      postedTo: '1',
     })
 
     expect(result.isLeft()).toBe(true)

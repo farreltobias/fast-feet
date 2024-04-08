@@ -1,9 +1,9 @@
 export enum DeliveryStatusEnum {
-  'CREATED',
-  'PENDING',
-  'WITHDRAWN',
-  'DELIVERED',
-  'RETURNED',
+  'CREATED' = 'CREATED',
+  'PENDING' = 'PENDING',
+  'WITHDRAWN' = 'WITHDRAWN',
+  'DELIVERED' = 'DELIVERED',
+  'RETURNED' = 'RETURNED',
 }
 
 export class DeliveryStatus {
@@ -18,15 +18,15 @@ export class DeliveryStatus {
   }
 
   isBefore(status: DeliveryStatusEnum) {
-    const statusIndex = this.value
-    const newStatusIndex = status
+    const statusIndex = Object.keys(DeliveryStatusEnum).indexOf(this.value)
+    const newStatusIndex = Object.keys(DeliveryStatusEnum).indexOf(status)
 
     return statusIndex - 1 === newStatusIndex
   }
 
   isNext(status: DeliveryStatusEnum) {
-    const statusIndex = this.value
-    const newStatusIndex = status
+    const statusIndex = Object.keys(DeliveryStatusEnum).indexOf(this.value)
+    const newStatusIndex = Object.keys(DeliveryStatusEnum).indexOf(status)
 
     return statusIndex + 1 === newStatusIndex
   }

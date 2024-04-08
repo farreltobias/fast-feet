@@ -1,7 +1,8 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Delivery } from '../../enterprise/entities/delivery'
-import { DeliveryWithLocation } from '../../enterprise/entities/value-objects/delivery-with-location'
+import { DeliveryDetails } from '../../enterprise/entities/value-objects/delivery-details'
 import { DeliveryStatusEnum } from '../../enterprise/entities/value-objects/delivery-status'
+import { DeliveryWithRecipient } from '../../enterprise/entities/value-objects/delivery-with-recipient'
 
 export interface LocationParams extends PaginationParams {
   state: string
@@ -15,12 +16,16 @@ export interface DeliverymanParams extends PaginationParams {
   status?: DeliveryStatusEnum
 }
 
-export interface DeliveriesRepository {
-  findById(id: string): Promise<Delivery | null>
-  save(delivery: Delivery): Promise<void>
-  create(delivery: Delivery): Promise<void>
-  findManyByLocation(params: LocationParams): Promise<DeliveryWithLocation[]>
-  findManyByDeliveryman(
+export abstract class DeliveriesRepository {
+  abstract findById(id: string): Promise<Delivery | null>
+  abstract save(delivery: Delivery): Promise<void>
+  abstract create(delivery: Delivery): Promise<void>
+  abstract findBySlug(slug: string): Promise<DeliveryWithRecipient | null>
+  abstract findManyByLocation(
+    params: LocationParams,
+  ): Promise<DeliveryDetails[]>
+
+  abstract findManyByDeliveryman(
     params: DeliverymanParams,
-  ): Promise<DeliveryWithLocation[]>
+  ): Promise<DeliveryDetails[]>
 }

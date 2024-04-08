@@ -2,7 +2,7 @@ import { ValueObject } from '@/core/entities/value-object'
 import { DeliveryStatus } from './delivery-status'
 import { Slug } from './slug'
 
-export interface DeliveryWithLocationProps {
+export interface DeliveryDetailsProps {
   name: string
   slug: Slug
   status: DeliveryStatus
@@ -12,7 +12,7 @@ export interface DeliveryWithLocationProps {
   updatedAt?: Date | null
 }
 
-export class DeliveryWithLocation extends ValueObject<DeliveryWithLocationProps> {
+export class DeliveryDetails extends ValueObject<DeliveryDetailsProps> {
   get neighborhood(): string {
     return this.props.neighborhood
   }
@@ -41,7 +41,7 @@ export class DeliveryWithLocation extends ValueObject<DeliveryWithLocationProps>
     return this.props.updatedAt
   }
 
-  static create(props: DeliveryWithLocationProps): DeliveryWithLocation {
-    return new DeliveryWithLocation(props)
+  static create(props: DeliveryDetailsProps): DeliveryDetails {
+    return new DeliveryDetails(props)
   }
 }

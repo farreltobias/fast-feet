@@ -5,6 +5,7 @@ import { DeliverymansRepository } from '../repositories/deliverymans-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { InvalidCPFError } from './errors/invalid-cpf-error'
+import { Injectable } from '@nestjs/common'
 
 interface RegisterDeliverymanDTO {
   name: string
@@ -17,6 +18,7 @@ type RegisterDeliverymanResponse = Either<
   { deliveryman: Deliveryman }
 >
 
+@Injectable()
 export class RegisterDeliverymanUseCase {
   constructor(
     private deliverymansRepository: DeliverymansRepository,

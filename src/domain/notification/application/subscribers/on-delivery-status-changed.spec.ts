@@ -62,7 +62,7 @@ describe('On Delivery Created', () => {
 
     const delivery = makeDelivery({
       status: DeliveryStatus.create(DeliveryStatusEnum.PENDING),
-      recipientId: recipient.id,
+      postedTo: recipient.id,
     })
 
     const deliveryman = makeDeliveryman()

@@ -6,6 +6,7 @@ import { DeliverymansRepository } from '../repositories/deliverymans-repository'
 import { WrongStatusError } from './errors/wrong-status-error'
 import { DeliveryStatusEnum } from '../../enterprise/entities/value-objects/delivery-status'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
+import { Injectable } from '@nestjs/common'
 
 interface WithdrawDeliveryDTO {
   deliveryId: string
@@ -17,6 +18,7 @@ type WithdrawDeliveryResponse = Either<
   { delivery: Delivery }
 >
 
+@Injectable()
 export class WithdrawDeliveryUseCase {
   constructor(
     private deliveriesRepository: DeliveriesRepository,

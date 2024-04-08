@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  DELIVERYMAN
+}
+
+model User {
+  id       String @id @default(uuid())
+  cpf      String @unique
+  name     String
+  password String
+  role     Role   @default(DELIVERYMAN)
+
+  deliveries Delivery[]
+  created    Delivery[] @relation("admin")
+
+  @@map("users")
+}
+
+enum DeliveryStatus {
+  CREATED
+  PENDING
+  WITHDRAWN
+  DELIVERED
+  RETURNED
+}
+
+model Delivery {
+  id          String         @id @default(uuid())
+  name        String
+  slug        String         @unique
+  status      DeliveryStatus
+  createdBy   String         @map("admin_id")
+  postedAt    DateTime?      @map("posted_at")
+  postedTo    String?        @map("recipient_id")
+  withdrawnAt DateTime?      @map("withdrawn_at")
+  withdrawnBy String?        @map("deliveryman_id")
+  deliveredAt DateTime?      @map("delivered_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime?      @updatedAt @map("updated_at")
+
+  admin             User               @relation("admin", fields: [createdBy], references: [id])
+  deliveryman       User?              @relation(fields: [withdrawnBy], references: [id])
+  recipient         Recipient?         @relation(fields: [postedTo], references: [id])
+  confirmationPhoto ConfirmationPhoto? @relation("confirmationPhoto")
+
+  @@map("deliveries")
+}
+
+model Recipient {
+  id           String  @id @default(uuid())
+  name         String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String  @map("zip_code")
+
+  deliveries    Delivery[]
+  notifications Notification[]
+
+  @@map("recipients")
+}
+
+model ConfirmationPhoto {
+  id         String  @id @default(uuid())
+  title      String
+  url        String
+  deliveryId String? @unique @map("delivery_id")
+
+  delivery Delivery? @relation("confirmationPhoto", fields: [deliveryId], references: [id])
+
+  @@map("confirmation_photos")
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  recipientId String    @map("recipient_id")
+  title       String
+  content     String
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  recipient Recipient @relation(fields: [recipientId], references: [id])
+
+  @@map("notifications")
+}

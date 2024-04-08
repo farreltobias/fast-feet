@@ -1,7 +1,8 @@
 import { Either, right } from '@/core/either'
 import { DeliveriesRepository } from '../repositories/deliveries-repository'
-import { DeliveryWithLocation } from '../../enterprise/entities/value-objects/delivery-with-location'
+import { DeliveryDetails } from '../../enterprise/entities/value-objects/delivery-details'
 import { DeliveryStatusEnum } from '../../enterprise/entities/value-objects/delivery-status'
+import { Injectable } from '@nestjs/common'
 
 interface FetchPendingDeliveriesNearbyDTO {
   state: string
@@ -12,9 +13,10 @@ interface FetchPendingDeliveriesNearbyDTO {
 
 type FetchPendingDeliveriesNearbyResponse = Either<
   null,
-  { deliveries: DeliveryWithLocation[] }
+  { deliveries: DeliveryDetails[] }
 >
 
+@Injectable()
 export class FetchPendingDeliveriesNearbyUseCase {
   constructor(private deliveriesRepository: DeliveriesRepository) {}
 

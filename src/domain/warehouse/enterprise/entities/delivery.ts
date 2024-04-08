@@ -13,13 +13,15 @@ export interface DeliveryProps {
   name: string
   slug: Slug
   status: DeliveryStatus
+  createdBy: UniqueEntityID
+  postedTo?: UniqueEntityID | null
+  postedAt?: Date | null
   withdrawnAt?: Date | null
   withdrawnBy?: UniqueEntityID | null
   deliveredAt?: Date | null
   confirmationPhoto?: DeliveryConfirmationPhoto | null
   createdAt: Date
   updatedAt?: Date | null
-  recipientId?: UniqueEntityID | null
 }
 
 export class Delivery extends AggregateRoot<DeliveryProps> {
@@ -42,6 +44,10 @@ export class Delivery extends AggregateRoot<DeliveryProps> {
     return this.props.status
   }
 
+  get createdBy(): UniqueEntityID {
+    return this.props.createdBy
+  }
+
   set status(status: DeliveryStatus) {
     const { value } = status
     const isValidStatus = this.props.status.isValid(value)
@@ -56,7 +62,7 @@ export class Delivery extends AggregateRoot<DeliveryProps> {
     if (
       value === DeliveryStatusEnum.PENDING &&
       isStatusProceeding &&
-      !this.props.recipientId
+      !this.props.postedTo
     ) {
       return
     }
@@ -74,9 +80,9 @@ export class Delivery extends AggregateRoot<DeliveryProps> {
       return
     }
 
-    if (this.props.recipientId) {
+    if (this.props.postedTo) {
       this.addDomainEvent(
-        new DeliveryStatusChangedEvent(this, status, this.props.recipientId),
+        new DeliveryStatusChangedEvent(this, status, this.props.postedTo),
       )
     }
 
@@ -84,15 +90,20 @@ export class Delivery extends AggregateRoot<DeliveryProps> {
     this.touch()
   }
 
-  get recipientId(): UniqueEntityID | null | undefined {
-    return this.props.recipientId
+  get postedAt(): Date | null | undefined {
+    return this.props.postedAt
   }
 
-  set recipientId(recipientId: UniqueEntityID | null) {
-    this.props.recipientId = recipientId
+  get postedTo(): UniqueEntityID | null | undefined {
+    return this.props.postedTo
+  }
+
+  set postedTo(postedTo: UniqueEntityID | null) {
+    this.props.postedTo = postedTo
     this.touch()
 
-    if (recipientId) {
+    if (postedTo) {
+      this.props.postedAt = new Date()
       this.status = DeliveryStatus.create(DeliveryStatusEnum.PENDING)
     }
   }

@@ -4,21 +4,24 @@ import { DeliverymansRepository } from '../repositories/deliverymans-repository'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { Encrypter } from '../cryptography/encrypter'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
+import { AdminsRepository } from '../repositories/admins-repository'
+import { Admin } from '../../enterprise/entities/admin'
 
-interface AuthenticateDeliverymanRequestUseCase {
+interface AuthenticateUserRequestUseCase {
   cpf: string
   password: string
 }
 
-type AuthenticateDeliverymanResponseUseCase = Either<
+type AuthenticateUserResponseUseCase = Either<
   WrongCredentialsError,
   { accessToken: string }
 >
 
 @Injectable()
-export class AuthenticateDeliverymanUseCase {
+export class AuthenticateUserUseCase {
   constructor(
     private deliverymansRepository: DeliverymansRepository,
+    private adminRepository: AdminsRepository,
     private hashComparer: HashComparer,
     private encrypter: Encrypter,
   ) {}
@@ -26,16 +29,23 @@ export class AuthenticateDeliverymanUseCase {
   async execute({
     cpf,
     password,
-  }: AuthenticateDeliverymanRequestUseCase): Promise<AuthenticateDeliverymanResponseUseCase> {
+  }: AuthenticateUserRequestUseCase): Promise<AuthenticateUserResponseUseCase> {
     const deliveryman = await this.deliverymansRepository.findByCPF(cpf)
+    const admin = await this.adminRepository.findByCPF(cpf)
 
-    if (!deliveryman) {
+    if (!deliveryman && !admin) {
       return left(new WrongCredentialsError())
+    }
+
+    const user = {
+      role: deliveryman ? 'DELIVERYMAN' : 'ADMIN',
+      id: deliveryman ? deliveryman.id : (admin as Admin).id,
+      password: deliveryman ? deliveryman.password : (admin as Admin).password,
     }
 
     const isValidPassword = await this.hashComparer.compare(
       password,
-      deliveryman.password,
+      user.password,
     )
 
     if (!isValidPassword) {
@@ -43,7 +53,8 @@ export class AuthenticateDeliverymanUseCase {
     }
 
     const accessToken = await this.encrypter.encrypt({
-      sub: deliveryman.id.toString(),
+      sub: user.id.toString(),
+      role: user.role,
     })
 
     return right({
